@@ -4,9 +4,9 @@ import LexerT;
 program   : BEGIN statement+ EOF;
           
 statement : print | while_block | condition_block | operation | content_block | for_operation | assign |
-read | for_block | if_block | raiz | cos | sen | log;
+read | for_block | if_block;
 block: statement+;
-declare: (NUMBER_|STRING_|FLOAT_) assign;
+declare: (NUMBER_|STRING_|FLOAT_) (ID | assign);
 assign: ID IGUAL operation; //Nat x = 24
 
 //CONTENIDO
@@ -21,10 +21,10 @@ operation:
           | operation RESTA operation
           | operation DIVISION operation
           | operation MULTIPLICACION operation
-          | raiz
-          | sen
-          | cos
-          | log
+          | RAIZ PARENTESIS1 operation PARENTESIS2
+          | COSENO PARENTESIS1 operation PARENTESIS2
+          | SENO PARENTESIS1 operation PARENTESIS2
+          | LOGARITMO PARENTESIS1 operation PARENTESIS2
           ;
 for_operation: ID EQUAL (ID|NUMBER|FLOAT);
 
@@ -48,7 +48,7 @@ div: DIVISION ID PARENTESIS1 (ID|NUMBER|FLOAT) PARENTESIS2; // div x(14)
 mult: MULTIPLICACION ID PARENTESIS1 (ID|NUMBER|FLOAT) PARENTESIS2; //prod x(14)*/
 
 //funciones
-raiz: RAIZ PARENTESIS1 (operation) PARENTESIS2; //sqrt(14)
+/*raiz: RAIZ PARENTESIS1 (operation) PARENTESIS2; //sqrt(14)
 cos: COSENO PARENTESIS1 (operation) PARENTESIS2; //cos(14) en radianes
 sen: SENO PARENTESIS1 (operation) PARENTESIS2; //sen(14) en radianes
-log: LOGARITMO PARENTESIS1 (operation) PARENTESIS2; //log(15) en base 10
+log: LOGARITMO PARENTESIS1 (operation) PARENTESIS2; //log(15) en base 10*/

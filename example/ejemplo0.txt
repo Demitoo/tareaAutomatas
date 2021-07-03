@@ -1,2 +1,4 @@
 Commence
 print(14)
+nat x = 4
+print (x)
