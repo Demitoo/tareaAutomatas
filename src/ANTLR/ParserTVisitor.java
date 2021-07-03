@@ -95,28 +95,4 @@ public interface ParserTVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIf_block(ParserTParser.If_blockContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ParserTParser#raiz}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRaiz(ParserTParser.RaizContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ParserTParser#cos}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCos(ParserTParser.CosContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ParserTParser#sen}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSen(ParserTParser.SenContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ParserTParser#log}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLog(ParserTParser.LogContext ctx);
 }

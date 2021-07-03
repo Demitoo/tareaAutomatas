@@ -20,10 +20,6 @@ import ANTLR.ParserTParser.For_blockContext;
 import ANTLR.ParserTParser.ReadContext;
 import ANTLR.ParserTParser.DeclareContext;
 import ANTLR.ParserTParser.If_blockContext;
-import ANTLR.ParserTParser.CosContext;
-import ANTLR.ParserTParser.LogContext;
-import ANTLR.ParserTParser.RaizContext;
-import ANTLR.ParserTParser.SenContext;
 
 
 
@@ -34,30 +30,40 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 	
 	@Override
 	public Integer visitAssign(AssignContext ctx){
-        /*String id = ctx.ID().get(0).getText();        
-        String value = "";        
-        
-        if (variables.containsKey(id))
-            throw new IllegalArgumentException("Variable '" + id + "' ya fue declarada");
-        else {
-        	if (ctx.ID().size() > 1) {
-        		value = ctx.ID(1).getText(); 
-        	}else { 
-            	//System.out.println(id+" en else ");//+ctx.BOOLEAN_().getText());    	   
-            	if (ctx.FLOAT()!=null) {
-            		value = ctx.FLOAT().getText();
-            	}else if(ctx.NUMBER()!=null){
-            		value = ctx.NUMBER().getText();
-            	}else{
-            		value = ctx.STRING().getText().substring(1, ctx.STRING().getText().length()-1);          		
-            	}
-        	}
-        	//System.out.println(value);
-        	variables.put(id, value);
-        	//System.out.println(variables.get(id));
-        }       */
+		String id1=ctx.ID().getText();
+		int value1=0;
+		if(!variables.containsKey(id1)) {
+			throw new IllegalArgumentException("La variable " +id1 +" no esta declarada");
+		}else {
+			value1=visitOperation(ctx.operation());
+			variables.put(id1, String.valueOf(value1));
+		}
         return 0;
     }
+	
+	@Override
+	public Integer visitDeclare(DeclareContext ctx){
+		String nueva="";
+		if(ctx.assign()!=null) {
+			if(variables.containsKey(ctx.assign().ID().getText())) {
+				throw new IllegalArgumentException("La variable ya fue declarada");
+			}else {
+				variables.put(ctx.assign().ID().getText(), String.valueOf(nueva));
+			}
+			visitAssign(ctx.assign());
+		}else {
+			String id=ctx.ID().getText();
+			if(variables.containsKey(id)) {
+				throw new IllegalArgumentException("La variable ya fue declarada");
+			}else {
+				variables.put(id, String.valueOf(nueva));
+			}
+		}
+        return 0;
+    }
+	
+	
+	
 	
 	@Override
 	public Integer visitPrint(PrintContext ctx){	        
@@ -140,12 +146,24 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 	 }*/
 	 
 	 @Override 
-	 public Integer visitIf_block(ParserTParser.If_blockContext ctx) { 
+	 public Integer visitIf_block(If_blockContext ctx) { 
 		 Integer salida = 0;
 		 
-		 salida = visitCondition_block(ctx.condition_block());	
-		 if (salida == 1) {
-			 //salida = visitContent_block(ctx.content_block()); 
+		 if(ctx.content_block()==null) {
+			 throw new IllegalArgumentException("No hay contenido en la condicion");
+		 }
+		 
+		 salida = visitCondition_block(ctx.condition_block());
+		 System.out.println("xddd");
+		 System.out.println(salida);
+		 
+		 if(ctx.content_block().size()>1) {
+			 if(salida==1) {
+				 visitContent_block(ctx.content_block(1));
+			 }
+		 }else {
+			if(salida!=1) {
+			visitContent_block(ctx.content_block(0));}
 		 }
 		 return salida; 
 	 }
@@ -156,13 +174,14 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 		Integer salidaCondition = -1;
 		Integer salidaStatement = -1;
 
-		salidaCondition = visitOperation(ctx.operation());
-		if(salidaCondition==0) {
-			if(ctx.operation()!=null)
-				salidaStatement = visitOperation(ctx.operation());
-			else
-				throw new IllegalArgumentException("IF sin statements");	
-		}	
+		salidaStatement = visitOperation(ctx.operation());
+		if(salidaStatement==0) {
+			salidaCondition=0;
+		}else if(salidaStatement==1){
+			salidaCondition=1;
+		}else{
+			salidaCondition=0;
+		}
 		return salidaCondition;
 	 }
 	/* @Override 
@@ -184,7 +203,13 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 		 {
 			 salida= visitStatement(ctx.statement(indice));
 		 }
-		 
+		 return salida; 
+	 }
+	 
+	 @Override 
+	 public Integer visitContent_block(Content_blockContext ctx) { 
+		 Integer salida =0;
+		 salida=visitBlock(ctx.block());
 		 return salida; 
 	 }
 	 
@@ -197,7 +222,68 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 		 String value2 ="";
 		 Integer salida = -1;
 		 
+		 
 		 if(ctx.getChildCount()==1){
+             if(ctx.RAIZ()!= null || ctx.COSENO()!= null || ctx.LOGARITMO()!=null || ctx.SENO()!=null) {
+            	 value1=String.valueOf(visitOperation(ctx.operation(0)));
+            	 if (ctx.RAIZ()!=null){;
+				   salida=(int)Math.sqrt(Float.parseFloat(value1));
+			     }else if (ctx.COSENO()!=null){
+				    salida=(int)Math.cos(Float.parseFloat(value1));
+			     }else if (ctx.SENO()!=null){
+				    salida=(int)Math.sin(Float.parseFloat(value1));
+			     }else if (ctx.LOGARITMO()!=null){
+				    salida=(int)Math.log10(Float.parseFloat(value1));
+			     } 
+			 }else {
+				 
+			 if(ctx.NUMBER()!=null) {
+				 value1=ctx.NUMBER().getText(); 
+			 }else if(ctx.FLOAT()!=null) {
+				 value1=ctx.FLOAT().getText(); 
+			 }else if(ctx.ID()!=null) {
+				 id1=ctx.ID().getText();
+				 if(variables.containsKey(id1)) {
+					 value1=variables.get(id1);
+				 }else {
+					 throw new IllegalArgumentException("Variable '" + id1 + "' has not ben declared");
+				 }
+			 }}
+			 salida=Integer.valueOf(value1);
+		 }else {
+			 value1=String.valueOf(visitOperation(ctx.operation(0)));
+			 value2=String.valueOf(visitOperation(ctx.operation(1)));
+			 if(ctx.EQUAL()!=null) {
+				 if(value1.equals(value2)) {
+					 salida=0;
+				 }else {
+					 salida=1;
+				 }
+			 }else if(ctx.Y()!=null) {  
+				 if(value1.equals("0") && value2.equals("0")) {
+					 salida=0;
+				 }else {
+					 salida=1;
+				 } 
+			 }else if(ctx.O()!=null) { 
+				 if(value1.equals("0") || value2.equals("0")) {
+					 salida=0;
+				 }else {
+					 salida=1;
+				 } 
+			 }else if(ctx.SUMA()!=null) {
+				 salida=Integer.parseInt(value1)+Integer.parseInt(value2);
+			 }else if (ctx.RESTA()!=null) {
+				 salida=Integer.parseInt(value1)-Integer.parseInt(value2);
+			 }else if (ctx.DIVISION()!=null) {
+				 salida=Integer.parseInt(value1)/Integer.parseInt(value2);
+			 }else if(ctx.MULTIPLICACION()!=null){
+				 salida=Integer.parseInt(value1)*Integer.parseInt(value2);
+			 }
+		 }
+		 
+		 
+		 /*if(ctx.getChildCount()==1){ 
 			 id1 = ctx.ID().getText();
 			 if (!variables.containsKey(id1))
 		            throw new IllegalArgumentException("Variable '" + id1 + "' has not ben declared");
@@ -230,15 +316,16 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 					 }
 				 }
 			 }
-		 } 
+		 } */
 		 return salida; 	 
 	 }
 	 
 	 @Override 
 	 public Integer visitWhile_block(While_blockContext ctx) { 
 		 Integer salida=0;
-		 while(salida==0) {
+		 while(salida==0){
 			 salida = visitCondition_block(ctx.condition_block());
+			 visitContent_block(ctx.content_block());
 		 }
 		 
 		 return salida; 	 
@@ -256,6 +343,8 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 			 salida = visitIf_block(ctx.if_block());
 		 }else if(ctx.while_block()!=null){
 			 salida = visitWhile_block(ctx.while_block());
+		 }else if(ctx.declare()!=null) {
+			 salida= visitDeclare(ctx.declare());
 		 }
 		 /*for(int indice = 0;indice<list.size();indice++)
 		 {
