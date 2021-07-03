@@ -12,8 +12,20 @@ import ANTLR.ParserTParser.StatementContext;
 import ANTLR.ParserTParser.While_blockContext;
 import ANTLR.ParserTParser.AssignContext;
 import ANTLR.ParserTParser.BlockContext;
+import ANTLR.ParserTParser.Content_blockContext;
 import ANTLR.ParserTParser.Condition_blockContext;
 import ANTLR.ParserTParser.OperationContext;
+import ANTLR.ParserTParser.For_operationContext;
+import ANTLR.ParserTParser.For_blockContext;
+import ANTLR.ParserTParser.ReadContext;
+import ANTLR.ParserTParser.DeclareContext;
+import ANTLR.ParserTParser.If_blockContext;
+import ANTLR.ParserTParser.CosContext;
+import ANTLR.ParserTParser.LogContext;
+import ANTLR.ParserTParser.RaizContext;
+import ANTLR.ParserTParser.SenContext;
+
+
 
 import java.math.*;
 
@@ -22,7 +34,7 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 	
 	@Override
 	public Integer visitAssign(AssignContext ctx){
-        String id = ctx.ID().get(0).getText();        
+        /*String id = ctx.ID().get(0).getText();        
         String value = "";        
         
         if (variables.containsKey(id))
@@ -30,21 +42,20 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
         else {
         	if (ctx.ID().size() > 1) {
         		value = ctx.ID(1).getText(); 
-        	}else { /*
+        	}else { 
             	//System.out.println(id+" en else ");//+ctx.BOOLEAN_().getText());    	   
-            	if (ctx.BOOLEAN_()!=null) {
-            		if(ctx.TRUE()!=null)
-            			value = ctx.TRUE().getText();
-            		else
-            			value = ctx.FALSE().getText();            		
+            	if (ctx.FLOAT()!=null) {
+            		value = ctx.FLOAT().getText();
             	}else if(ctx.NUMBER()!=null){
             		value = ctx.NUMBER().getText();
             	}else{
             		value = ctx.STRING().getText().substring(1, ctx.STRING().getText().length()-1);          		
-            	}*/
+            	}
         	}
+        	//System.out.println(value);
         	variables.put(id, value);
-        }       
+        	//System.out.println(variables.get(id));
+        }       */
         return 0;
     }
 	
@@ -59,6 +70,40 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 	        System.out.println(output);
 	        return 0;
 	}
+	/*@Override
+	
+	public Integer visitSuma(SumaContext ctx){
+		//OBTENER NOMBRE Y ASIGNAR VALUE EN CASO DE EXISTIR PRIMERA VARIABLE
+		    float value1=0;
+		    float value2=0;
+		    String id1=ctx.ID(0).getText();
+		    //variable=Integer.parseInt(ctx.ID(0).getText());
+		    if(!variables.containsKey(id1)){
+		    	throw new IllegalArgumentException("Variable '" + id1 + "' no esta declarada");
+		    }else {
+		    	value1=Integer.parseInt(variables.get(id1));
+		    }
+		 // " DE SEGUNDA VARIABLE
+		    if(ctx.ID().size()>1) {
+		    	 String id2=ctx.ID(1).getText();
+		    	 if(!variables.containsKey(id2)){
+				    	throw new IllegalArgumentException("Variable '" + id2 + "' no esta declarada");
+				    }else {
+				    	value2=Integer.parseInt(variables.get(id2));
+				    }	
+		    }else if(ctx.NUMBER()!=null){
+		    	value2=Integer.parseInt(ctx.NUMBER().getText());
+		    }else if(ctx.FLOAT()!=null){
+		    	value2=Float.parseFloat(ctx.FLOAT().getText());
+		    }else {
+		    	throw new IllegalArgumentException("Tipo de dato no valido");
+		    }
+		    System.out.println(value1);
+		    System.out.println(value2);
+		    variables.put(id1, String.valueOf(value1+value2));
+		    System.out.println(variables.get(id1));
+	        return 0;
+	}*/
 	 /*@Override
 	 public Integer visitAdd(AddContext ctx) {
 		 String variableName;
@@ -94,13 +139,13 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 		return 0;
 	 }*/
 	 
-	/* @Override 
+	 @Override 
 	 public Integer visitIf_block(ParserTParser.If_blockContext ctx) { 
 		 Integer salida = 0;
 		 
 		 salida = visitCondition_block(ctx.condition_block());	
 		 if (salida == 1) {
-			 salida = visitElse_block(ctx.else_block()); 
+			 //salida = visitContent_block(ctx.content_block()); 
 		 }
 		 return salida; 
 	 }
@@ -113,14 +158,14 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 
 		salidaCondition = visitOperation(ctx.operation());
 		if(salidaCondition==0) {
-			if(ctx.block()!=null)
-				salidaStatement = visitBlock(ctx.block());
+			if(ctx.operation()!=null)
+				salidaStatement = visitOperation(ctx.operation());
 			else
 				throw new IllegalArgumentException("IF sin statements");	
 		}	
 		return salidaCondition;
 	 }
-	 @Override 
+	/* @Override 
 	 public Integer visitElse_block(Else_blockContext ctx) { 
 		 Integer salida = 0;
 		 if(ctx.block()!=null)
@@ -203,10 +248,8 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 	 public Integer visitStatement(StatementContext ctx) { 
 		 Integer salida = 0;
 		 
-		 /*if(ctx.assign()!=null) {
+		 if(ctx.assign()!=null) {
 			 salida = visitAssign(ctx.assign());
-		 }else if(ctx.add()!=null) {
-			 salida = visitAdd(ctx.add());
 		 }else if(ctx.print()!=null) {
 			 salida = visitPrint(ctx.print());
 		 }else if(ctx.if_block()!=null) {
@@ -214,7 +257,6 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 		 }else if(ctx.while_block()!=null){
 			 salida = visitWhile_block(ctx.while_block());
 		 }
-		 */
 		 /*for(int indice = 0;indice<list.size();indice++)
 		 {
 			 if(list.get(indice).assign()!=null) {
