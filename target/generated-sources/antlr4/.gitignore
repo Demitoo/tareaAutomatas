@@ -6,3 +6,7 @@
 /ParserTLexer.tokens
 /ParserTListener.java
 /ParserTParser.java
+/ParserT.interp
+/ParserTBaseVisitor.java
+/ParserTLexer.interp
+/ParserTVisitor.java

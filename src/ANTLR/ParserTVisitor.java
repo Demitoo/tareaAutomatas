@@ -60,12 +60,6 @@ public interface ParserTVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitOperation(ParserTParser.OperationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ParserTParser#for_operation}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFor_operation(ParserTParser.For_operationContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link ParserTParser#read}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

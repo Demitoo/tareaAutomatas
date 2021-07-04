@@ -15,7 +15,6 @@ import ANTLR.ParserTParser.BlockContext;
 import ANTLR.ParserTParser.Content_blockContext;
 import ANTLR.ParserTParser.Condition_blockContext;
 import ANTLR.ParserTParser.OperationContext;
-import ANTLR.ParserTParser.For_operationContext;
 import ANTLR.ParserTParser.For_blockContext;
 import ANTLR.ParserTParser.ReadContext;
 import ANTLR.ParserTParser.DeclareContext;
@@ -68,11 +67,12 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 	@Override
 	public Integer visitPrint(PrintContext ctx){	        
 	        String output = "";
-	        if (ctx.ID() == null)
-	        	output = ctx.NUMBER().getText(); 
-	        else
-	        	output = variables.get(ctx.ID().getText()).toString();
-	        
+	        if (ctx.NUMBER()!= null) {
+	        	output = ctx.NUMBER().getText(); }else if(ctx.STRING()!=null){
+	        		output=ctx.STRING().getText();
+	        	}else {
+	        		output=variables.get(ctx.ID().getText());
+	        	}
 	        System.out.println(output);
 	        return 0;
 	}
@@ -154,8 +154,8 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 		 }
 		 
 		 salida = visitCondition_block(ctx.condition_block());
-		 System.out.println("xddd");
-		 System.out.println(salida);
+		 //System.out.println("xddd");
+		 //System.out.println(salida);
 		 
 		 if(ctx.content_block().size()>1) {
 			 if(salida==1) {
@@ -222,21 +222,8 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 		 String value2 ="";
 		 Integer salida = -1;
 		 
-		 
-		 if(ctx.getChildCount()==1){
-             if(ctx.RAIZ()!= null || ctx.COSENO()!= null || ctx.LOGARITMO()!=null || ctx.SENO()!=null) {
-            	 value1=String.valueOf(visitOperation(ctx.operation(0)));
-            	 if (ctx.RAIZ()!=null){;
-				   salida=(int)Math.sqrt(Float.parseFloat(value1));
-			     }else if (ctx.COSENO()!=null){
-				    salida=(int)Math.cos(Float.parseFloat(value1));
-			     }else if (ctx.SENO()!=null){
-				    salida=(int)Math.sin(Float.parseFloat(value1));
-			     }else if (ctx.LOGARITMO()!=null){
-				    salida=(int)Math.log10(Float.parseFloat(value1));
-			     } 
-			 }else {
-				 
+		 //System.out.println(ctx.getChildCount());
+		 if(ctx.getChildCount()==1){		 
 			 if(ctx.NUMBER()!=null) {
 				 value1=ctx.NUMBER().getText(); 
 			 }else if(ctx.FLOAT()!=null) {
@@ -248,37 +235,55 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 				 }else {
 					 throw new IllegalArgumentException("Variable '" + id1 + "' has not ben declared");
 				 }
-			 }}
+			 }
 			 salida=Integer.valueOf(value1);
 		 }else {
+			 //System.out.println(ctx.getChild(2).getText());
 			 value1=String.valueOf(visitOperation(ctx.operation(0)));
-			 value2=String.valueOf(visitOperation(ctx.operation(1)));
+			 //System.out.println("hola");
 			 if(ctx.EQUAL()!=null) {
+				 value2=String.valueOf(visitOperation(ctx.operation(1)));
 				 if(value1.equals(value2)) {
 					 salida=0;
 				 }else {
 					 salida=1;
 				 }
-			 }else if(ctx.Y()!=null) {  
+			 }else if(ctx.Y()!=null) {
+				 value2=String.valueOf(visitOperation(ctx.operation(1)));
 				 if(value1.equals("0") && value2.equals("0")) {
 					 salida=0;
 				 }else {
 					 salida=1;
 				 } 
-			 }else if(ctx.O()!=null) { 
+			 }else if(ctx.O()!=null) {
+				 value2=String.valueOf(visitOperation(ctx.operation(1)));
 				 if(value1.equals("0") || value2.equals("0")) {
 					 salida=0;
 				 }else {
 					 salida=1;
 				 } 
 			 }else if(ctx.SUMA()!=null) {
+				 value2=String.valueOf(visitOperation(ctx.operation(1)));
 				 salida=Integer.parseInt(value1)+Integer.parseInt(value2);
 			 }else if (ctx.RESTA()!=null) {
+				 value2=String.valueOf(visitOperation(ctx.operation(1)));
 				 salida=Integer.parseInt(value1)-Integer.parseInt(value2);
 			 }else if (ctx.DIVISION()!=null) {
+				 value2=String.valueOf(visitOperation(ctx.operation(1)));
 				 salida=Integer.parseInt(value1)/Integer.parseInt(value2);
 			 }else if(ctx.MULTIPLICACION()!=null){
+				 value2=String.valueOf(visitOperation(ctx.operation(1)));
 				 salida=Integer.parseInt(value1)*Integer.parseInt(value2);
+			 }else if(ctx.getChild(0).getText().equals("sqrt") || ctx.getChild(0).getText().equals("sen") || ctx.getChild(0).getText().equals("cos") || ctx.getChild(0).getText().equals("log")) {
+            	 if (ctx.getChild(0).getText().equals("sqrt")){;
+				   salida=(int)Math.sqrt(Float.parseFloat(value1));
+			     }else if (ctx.getChild(0).getText().equals("cos")){
+				    salida=(int)Math.cos(Float.parseFloat(value1));
+			     }else if (ctx.getChild(0).getText().equals("sen")){
+				    salida=(int)Math.sin(Float.parseFloat(value1));
+			     }else if (ctx.getChild(0).getText().equals("log")){
+				    salida=(int)Math.log10(Float.parseFloat(value1));
+			     } 
 			 }
 		 }
 		 
@@ -330,6 +335,29 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 		 
 		 return salida; 	 
 	 }
+	 public Integer visitFor_block(For_blockContext ctx) {
+		 int salida=0;
+		 //System.out.println(ctx.operation().getText());
+		 if(ctx.operation().isEmpty()) {
+			 throw new IllegalArgumentException("No hay condicion en el for");
+		 }else if(ctx.ID()==null) {
+			 throw new IllegalArgumentException("No hay variable de referencia para el ciclo for");
+		 }else if(variables.get(ctx.ID().getText())==null) {
+			 throw new IllegalArgumentException("La variable no a sido declarada");
+		 }else if(ctx.operation()!=null){
+			 int i=0;
+			 int value;
+			 salida=visitOperation(ctx.operation());
+			 for(i=Integer.parseInt(variables.get(ctx.ID().getText()));salida==0;i++) {
+				 visitContent_block(ctx.content_block());
+				 value=Integer.parseInt(variables.get(ctx.ID().getText()))+1;
+				 variables.put(ctx.ID().getText(), String.valueOf(value));
+				 salida=visitOperation(ctx.operation());
+			 }
+		 }
+		 
+		 return salida; 	 
+	 }
 	 
 	 @Override 
 	 public Integer visitStatement(StatementContext ctx) { 
@@ -345,6 +373,8 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 			 salida = visitWhile_block(ctx.while_block());
 		 }else if(ctx.declare()!=null) {
 			 salida= visitDeclare(ctx.declare());
+		 }else if(ctx.for_block()!=null) {
+			 salida=visitFor_block(ctx.for_block());
 		 }
 		 /*for(int indice = 0;indice<list.size();indice++)
 		 {
