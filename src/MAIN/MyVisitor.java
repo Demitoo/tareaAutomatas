@@ -26,8 +26,7 @@ import ANTLR.ParserTParser.If_blockContext;
 import java.math.*;
 
 public class MyVisitor extends ParserTBaseVisitor<Integer> {
-	private Map<String, String>  variables = new HashMap<String, String>();
-	
+	private Map<String, String>  variables  = new HashMap<String, String>();
 	@Override
 	public Integer visitAssign(AssignContext ctx){
 		String id1=ctx.ID().getText();
@@ -35,8 +34,11 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 		if(!variables.containsKey(id1)) {
 			throw new IllegalArgumentException("La variable " +id1 +" no esta declarada");
 		}else {
+			if(ctx.operation().STRING()==null) {
 			value1=visitOperation(ctx.operation());
-			variables.put(id1, String.valueOf(value1));
+			variables.put(id1, String.valueOf(value1));}else {
+				variables.put(id1, ctx.operation().getText());
+			}
 		}
         return 0;
     }

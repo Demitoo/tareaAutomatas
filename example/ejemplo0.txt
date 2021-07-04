@@ -1,4 +1,4 @@
 Commence
-nat x=0
+nat x="gol"
 read(x)
 print(x)
