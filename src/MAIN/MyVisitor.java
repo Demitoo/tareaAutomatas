@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import ANTLR.ParserTBaseVisitor;
 import ANTLR.ParserTParser;
@@ -24,6 +25,7 @@ import ANTLR.ParserTParser.If_blockContext;
 
 
 import java.math.*;
+import java.net.IDN;
 
 public class MyVisitor extends ParserTBaseVisitor<Integer> {
 	private Map<String, String>  variables = new HashMap<String, String>();
@@ -63,7 +65,27 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
     }
 	
 	
-	
+	@Override
+	public Integer visitRead(ReadContext ctx){	 
+		System.out.println(ctx.ID().getText());
+		
+	        if (ctx.ID().getText().equals("<missing ID>"))
+	        	throw new IllegalArgumentException("Falta nombre de variable en el \"read\"");
+	        else {
+	        	String id = ctx.ID().getText();
+	        	if( !variables.containsKey(id)) {
+	        		throw new IllegalArgumentException("La variable \"" +id+ "\" no existe");
+	        	}else {
+	        		System.out.println("HOLA");
+	        		Scanner scanner = new Scanner(System.in);
+	        		String input =  scanner.nextLine().toString();
+	        		scanner.close();
+	        		variables.put(id, input);
+	        	}
+	        }
+	        
+	        return 0;
+	}
 	
 	@Override
 	public Integer visitPrint(PrintContext ctx){	        
@@ -345,6 +367,8 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 			 salida = visitWhile_block(ctx.while_block());
 		 }else if(ctx.declare()!=null) {
 			 salida= visitDeclare(ctx.declare());
+		 }else if(ctx.read()!=null) {
+			 salida= visitRead(ctx.read());
 		 }
 		 /*for(int indice = 0;indice<list.size();indice++)
 		 {
