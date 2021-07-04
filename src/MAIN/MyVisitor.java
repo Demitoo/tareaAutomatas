@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import ANTLR.ParserTBaseVisitor;
 import ANTLR.ParserTParser;
@@ -359,6 +360,28 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 		 return salida; 	 
 	 }
 	 
+	 @Override
+	    public Integer visitRead(ReadContext ctx){
+	       // System.out.println(ctx.ID().getText());
+
+	            if (ctx.ID().getText().equals("<missing ID>"))
+	                throw new IllegalArgumentException("Falta nombre de variable en el \"read\"");
+	            else {
+	                String id = ctx.ID().getText();
+	                if( !variables.containsKey(id)) {
+	                    throw new IllegalArgumentException("La variable \"" +id+ "\" no existe");
+	                }else {
+	                    //System.out.println("HOLA");
+	                    Scanner scanner = new Scanner(System.in);
+	                    String input =  scanner.nextLine().toString();
+	                    scanner.close();
+	                    variables.put(id, input);
+	                }
+	            }
+
+	            return 0;
+	    }
+	 
 	 @Override 
 	 public Integer visitStatement(StatementContext ctx) { 
 		 Integer salida = 0;
@@ -375,6 +398,8 @@ public class MyVisitor extends ParserTBaseVisitor<Integer> {
 			 salida= visitDeclare(ctx.declare());
 		 }else if(ctx.for_block()!=null) {
 			 salida=visitFor_block(ctx.for_block());
+		 }else if(ctx.read()!=null) {
+			 salida=visitRead(ctx.read());
 		 }
 		 /*for(int indice = 0;indice<list.size();indice++)
 		 {

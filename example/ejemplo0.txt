@@ -1,11 +1,4 @@
 Commence
-nat x=4
-nat y=0
-for(x;y===0){
+nat x=0
+read(x)
 print(x)
-if(x===10){
-y=1
-print("xd")
-}
-
-}
